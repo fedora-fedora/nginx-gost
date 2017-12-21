@@ -1,0 +1,19 @@
+server {
+    listen 443 ssl;
+    server_name {{ item.value.sitename }} ;
+
+    ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert_bundle }};
+    ssl_certificate_key /etc/pki/tls/private/{{ item.value.key_bundle }};
+
+    ssl_client_certificate /etc/pki/tls/certs/{{ item.value.ca_full }};
+    ssl_verify_client      on;
+    ssl_crl                /etc/pki/tls/certs/{{ item.value.crl }};
+
+    access_log  /var/log/nginx/sms-access.log;
+    error_log   /var/log/nginx/sms-error.log debug;
+
+        location / {
+                proxy_pass  https://xml.sms16.ru;
+        }
+
+}

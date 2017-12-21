@@ -1,0 +1,86 @@
+---
+
+#- name: Generate dh.pem file
+#  shell: openssl dhparam -out /tmp/nginx/dhparam.pem 4096
+- name: Generate docker-entrypoint.sh
+  template:
+    src: templates/docker-entrypoint.sh.j2
+    dest: "{{ target_dir }}/configs/docker-entrypoint.sh"
+  with_dict: "{{ api }}"
+
+- name: Add execute ti docker-entrypoint.sh
+  file:
+    path: "{{ target_dir }}/configs/docker-entrypoint.sh"
+    mode: 0755
+
+- name: Generate for 00-default.conf
+  template:
+    src: templates/00-default.conf.j2
+    dest: "{{ target_dir }}/conf.d/00-default.conf"
+
+- name: Generate for admin.infoclinica.ru
+  template:
+    src: templates/admin.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/admin.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for admin-lab.infoclinica.ru
+  template:
+    src: templates/admin-lab.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/admin-lab.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for admin-web.infoclinica.ru
+  template:
+    src: templates/admin-web.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/admin-web.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for api.infoclinica.ru
+  template:
+    src: templates/api.conf.j2
+    dest: "{{ target_dir }}/conf.d/api.conf"
+  with_dict: "{{ api }}"
+
+- name: Generate for www.infoclinica.ru
+  template:
+    src: templates/www.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/www.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for sms.conf
+  template:
+    src: templates/sms.conf.j2
+    dest: "{{ target_dir }}/conf.d/sms.conf"
+  with_dict: "{{ sms }}"
+
+- name: Generate for www.clinicainfo.ru
+  template:
+    src: templates/www.clinicainfo.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/www.clinicainfo.ru.conf"
+  with_dict: "{{ clinicainfo }}"
+
+- name: Generate for exclusive clinica
+  template:
+    src: templates/exclusive.clinica.conf.j2
+    dest: "{{ target_dir }}/conf.d/01-vsite.{{ item.key }}.conf"
+  with_dict: "{{ exclusive }}"
+
+- name: Generate for labportal.infoclinica.ru
+  template:
+    src: templates/labportal.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/labportal.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for repo.infoclinica.ru
+  template:
+    src: templates/repo.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/repo.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for web.infoclinica.ru
+  template:
+    src: templates/web.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/web.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+

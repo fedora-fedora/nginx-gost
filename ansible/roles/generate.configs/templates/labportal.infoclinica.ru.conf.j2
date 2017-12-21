@@ -1,0 +1,23 @@
+server {
+                listen 443 ssl;
+                server_name labportal.{{ item.value.sitename }} dev-labportal.{{ item.value.sitename }};
+
+                ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert_bundle }};
+                ssl_certificate_key /etc/pki/tls/private/{{ item.value.key_bundle }};
+                {% if item.value.gost_engine is defined %}
+ssl_certificate_key {{ item.value.gost_engine }};
+                ssl_certificate /etc/pki/tls/certs/{{ item.value.gost_cert_pem }};
+                {% endif %}
+
+                location /
+                {
+                        set                     $backend_servers node-lab;
+                        proxy_pass              http://$backend_servers:8090;
+                        proxy_set_header        Host    $host;
+                        proxy_set_header        X-Real-Ip       $remote_addr;
+                        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header        X-SSL-Cipher $ssl_cipher;
+
+                }
+
+        }

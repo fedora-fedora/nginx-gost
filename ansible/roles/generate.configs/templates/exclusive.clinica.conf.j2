@@ -1,0 +1,35 @@
+server {
+        listen 443 ssl;
+        server_name {{ item.value.sitename }};
+
+        ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert }};
+        ssl_certificate_key /etc/pki/tls/private/{{ item.value.key }};
+{% if item.value.gost_engine is defined %}
+        ssl_certificate_key {{ item.value.gost_engine }};
+        ssl_certificate /etc/pki/tls/certs/{{ item.value.gost_cert_pem }};
+{% endif %}
+
+        location / {
+                proxy_set_header Host $http_host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-SSL-Cipher $ssl_cipher;
+                proxy_set_header Authorization $http_authorization;
+                proxy_connect_timeout   2s;
+                set              $backend_servers node;
+                proxy_pass       http://$backend_servers:9000;
+        }
+
+        error_page  404              /404.html;
+        location = /404.html {
+                root   /usr/share/nginx/html;
+        }
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /usr/share/nginx/html;
+        }
+
+}

@@ -1,0 +1,99 @@
+---
+# defaults file for generate.configs
+# *.sdsys.ru certificate
+api:
+  api:
+    sitename: infoclinica.ru
+    cert_bundle: web-infoclinica.full-bundle
+    key_bundle: web-infoclinica.key
+    ca_full: ca.pem
+    crl: crl.pem
+    gost_container: infoclinica
+    gost_engine: engine:gost_capi:*.infoclinica.ru
+    gost_cert: gost.infoclinica.ru.cer
+    gost_cert_pem: gost.infoclinica.ru.pem
+sms:
+  sms:
+    sitename: sms.infoclinica.ru
+#    cert: sms.infoclinica.ru.crt
+#    key: sms.infoclinica.ru.key
+    cert_bundle: web-infoclinica.full-bundle
+    key_bundle: web-infoclinica.key
+    ca_full: ca.pem
+    crl: crl.pem
+clinicainfo:
+  clinicainfo:
+    sitename: clinicainfo.ru
+    cert: clinicainfo.full-bundle
+    key: clinicainfo.key
+infoclinica:
+  infoclinica:
+    sitename: infoclinica.ru
+    cert_bundle: web-infoclinica.full-bundle
+    key_bundle: web-infoclinica.key
+exclusive:
+  01-default:
+    sitename: _
+    cert: web-infoclinica.full-bundle
+    key: web-infoclinica.key
+    gost_container: infoclinica
+    gost_engine: engine:gost_capi:*.infoclinica.ru
+    gost_cert: gost.infoclinica.ru.cer
+    gost_cert_pem: gost.infoclinica.ru.pem
+  kabinet.pet-net.ru:
+    sitename: kabinet.pet-net.ru
+    cert: kabinet.pet-net.ru.pem
+    key: kabinet.pet-net.ru.key
+  lk.bestclinic.ru:
+    sitename: lk.bestclinic.ru
+    cert: lk.bestclinic.ru.crt
+    key: lk.bestclinic.ru.key
+  lk.cmd38.ru:
+    sitename: lk.cmd38.ru
+    cert: lk.cmd38.ru.crt
+    key: lk.cmd38.ru.key
+  lk.dialine.org:
+    sitename: lk.dialine.org
+    cert: lk.dialine.org.crt
+    key: lk.dialine.org.key
+  lk.drclinics.ru:
+    sitename: lk.drclinics.ru
+    cert: lk.drclinics.ru.crt
+    key: lk.drclinics.ru.key
+  lk.klinikabudzdorov.ru:
+    sitename: lk.klinikabudzdorov.ru
+    cert: lk.klinikabudzdorov.ru.crt
+    key: lk.klinikabudzdorov.ru.key
+  lk.profmedicina.ru:
+    sitename: lk.profmedicina.ru
+    cert: lk.profmedicina.ru.crt
+    key: lk.profmedicina.ru.key
+  lk.promedicina.clinic:
+    sitename: lk.promedicina.clinic
+    cert: lk.promedicina.clinic.crt
+    key: lk.promedicina.clinic.key
+  lk.sadkomed.ru:
+    sitename: lk.sadkomed.ru
+    cert: lk.sadkomed.ru.crt
+    key: lk.sadkomed.ru.key
+  lk.spectramed.ru:
+    sitename: lk.spectramed.ru
+    cert: lk.spectramed.ru.crt
+    key: lk.spectramed.ru.key
+  lk.zub.ru:
+    sitename: lk.zub.ru
+    cert: lk.zub.ru.crt
+    key: lk.zub.ru.key
+  lk.sovamed.ru:
+    sitename: lk.sovamed.ru
+    cert: lk.sovamed.ru.crt
+    key: lk.sovamed.ru.key
+  my.kinzerskiy.clinic:
+    sitename: my.kinzerskiy.clinic
+    cert: kinzerskiy.clinic.crt
+    key: kinzerskiy.clinic.key
+  online.boscoclinica.ru:
+    sitename: online.boscoclinica.ru
+    cert: online.boscoclinica.ru.crt
+    key: online.boscoclinica.ru.key
+

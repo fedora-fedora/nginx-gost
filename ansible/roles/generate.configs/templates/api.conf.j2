@@ -1,0 +1,30 @@
+server {
+    listen 443 ssl;
+    server_name api.{{ item.value.sitename }} dev-api.{{ item.value.sitename }};
+
+    ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert_bundle }};
+    ssl_certificate_key /etc/pki/tls/private/{{ item.value.key_bundle }};
+
+    ssl_client_certificate /etc/pki/tls/certs/{{ item.value.ca_full }};
+    ssl_verify_client      on;
+    ssl_crl                /etc/pki/tls/certs/{{ item.value.crl }};
+
+    access_log  /var/log/nginx/api-access.log;
+    error_log   /var/log/nginx/api-error.log debug;
+
+        location /api {
+                proxy_set_header Host $http_x_forwarded_host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Authorization "Certificate e5cafb98-7f86-4571-b3ce-b87144f8ccef-$ssl_client_serial";
+                proxy_set_header X-SSL-Cipher $ssl_cipher;
+                proxy_connect_timeout   30s;
+                set              $backend_servers node-api;
+                proxy_pass       http://$backend_servers:9000;
+        }
+
+        location / {
+                return 403;
+        }
+
+}

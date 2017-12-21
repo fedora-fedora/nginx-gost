@@ -1,0 +1,12 @@
+---
+- name: Create directories
+  file:
+    path: "{{ target_dir }}/conf.d"
+    state: directory
+
+- name: Pull nginx build
+  include: git.yml
+
+- name: Generate config files
+  include: generate.configs.yml
+  

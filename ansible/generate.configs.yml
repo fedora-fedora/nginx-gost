@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    target_dir: "{{ build_dir|default('~/nginx') }}"
+  roles:
+    - generate.configs
+
