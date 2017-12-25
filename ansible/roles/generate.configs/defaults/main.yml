@@ -48,7 +48,7 @@ exclusive:
     sitename: lk.bestclinic.ru
     cert: lk.bestclinic.ru.crt
     key: lk.bestclinic.ru.key
-  lk.bleskmed.ru
+  lk.bleskmed.ru:
     sitename: lk.bleskmed.ru
     cert: lk.bleskmed.ru.crt
     key: lk.bleskmed.ru.key
@@ -60,7 +60,7 @@ exclusive:
     sitename: lk.dialine.org
     cert: lk.dialine.org.crt
     key: lk.dialine.org.key
-  lk.doct.ru
+  lk.doct.ru:
     sitename: lk.doct.ru
     cert: lk_doct_ru.crt
     key: lk_doct_ru.key
