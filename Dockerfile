@@ -38,5 +38,5 @@ COPY bundle/ /etc/pki/tls/
 RUN chown -R root:root /var/opt/cprocsp/keys/root
 #VOLUME ["/var/opt/cprocsp", "/etc/nginx/conf.d"]
 EXPOSE 80 443
-HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=2 CMD [ "/usr/bin/curl", "localhost", "||", "exit 1" ]
+HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=2 CMD [ "/usr/bin/curl", "-f", "http://localhost/", "||", "exit 1" ]
 CMD ["nginx", "-g", "daemon off;"]
