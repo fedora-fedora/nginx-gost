@@ -1,0 +1,15 @@
+version: '2.2'
+services:
+  nginx_gost:
+    image: registry.sdsys.ru/nginx_gost:${BUILD_NUMBER}
+    ports:
+      - "81:80"
+      - "444:443"
+    cap_add:
+      - ALL
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    tmpfs:
+      - /run
+      - /run/lock
+
