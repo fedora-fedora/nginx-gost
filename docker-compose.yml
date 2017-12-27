@@ -2,7 +2,7 @@ version: '2.2'
 services:
   nginx_gost:
     image: ${docker_registry}/${docker_image}:${BUILD_NUMBER}
-    container_name: nginx-gost
+    container_name: ${container_name}
     ports:
       - "81:80"
       - "444:443"
