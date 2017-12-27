@@ -1,7 +1,7 @@
 version: '2.2'
 services:
   nginx_gost:
-    image: registry.sdsys.ru/nginx_gost:${BUILD_NUMBER}
+    image: ${docker_registry}/${docker_image}:${BUILD_NUMBER}
     ports:
       - "81:80"
       - "444:443"
