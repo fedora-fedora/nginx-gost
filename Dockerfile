@@ -25,6 +25,7 @@ ENTRYPOINT ["/tmp/docker-entrypoint.sh"]
 
 #Копируем дистрибутив
 COPY configs/docker-entrypoint.sh \
+     iru-hosts \
      distributive/lsb-cprocsp-kc2-64-4.0.0-4.x86_64.rpm \
      /tmp/
 

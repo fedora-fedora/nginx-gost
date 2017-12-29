@@ -37,6 +37,6 @@ sed -i "s/user  nginx;/user  root;/" /etc/nginx/nginx.conf
 
 # Дописываем имена в /etc/hosts
 
-cat iru-hosts >> /etc/hosts
+cat /tmp/iru-hosts >> /etc/hosts
 
 exec "$@"
