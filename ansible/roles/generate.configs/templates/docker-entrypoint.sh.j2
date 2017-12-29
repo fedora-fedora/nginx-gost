@@ -35,4 +35,8 @@ sed -i "s/user  nginx;/user  root;/" /etc/nginx/nginx.conf
 [ ! -z ${NODE_LAB} ] && sed -i "s/backend_servers node-lab/backend_servers ${NODE_LAB}/g" /etc/nginx/conf.d/labportal.infoclinica.ru.conf
 [ ! -z ${NODE_WEB} ] && sed -i "s/backend_servers node-web/backend_servers ${NODE_WEB}/g" /etc/nginx/conf.d/web.infoclinica.ru.conf
 
+# Дописываем имена в /etc/hosts
+
+cat iru-hosts >> /etc/hosts
+
 exec "$@"
