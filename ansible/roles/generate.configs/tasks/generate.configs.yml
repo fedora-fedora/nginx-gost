@@ -84,3 +84,15 @@
     dest: "{{ target_dir }}/conf.d/web.infoclinica.ru.conf"
   with_dict: "{{ infoclinica }}"
 
+- name: Generate hosts file
+  lineinfile:
+    line: "127.0.0.1    {{ item.value.sitename }}"
+    path: "{{ target_dir }}/hosts"
+  with_dict: "{{ exclusive }}"
+
+- name: Delete default_sitename line
+  lineinfile:
+    line: "127.0.0.1    _"
+    state: absent
+    path: "{{ target_dir }}/hosts"
+

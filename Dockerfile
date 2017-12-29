@@ -28,13 +28,14 @@ COPY configs/docker-entrypoint.sh \
      distributive/lsb-cprocsp-kc2-64-4.0.0-4.x86_64.rpm \
      /tmp/
 
-#Копируем контейнер с ключами, сертификат в формате DER и тестовый конфиг для виртуального хоста, меняем владельца.
+#Копируем контейнер с ключами, сертификат в формате DER, файл /etc/hosts  и тестовый конфиг для виртуального хоста, меняем владельца.
 #COPY keys/test.000 /var/opt/cprocsp/keys/root/
 COPY keys/infoclin.000 /var/opt/cprocsp/keys/root/
 COPY keys/gost.infoclinica.ru.cer /etc/pki/tls/certs/
 #COPY keys/nginx.cer /tmp/nginx.cer
 COPY conf.d/ /etc/nginx/conf.d/
 COPY bundle/ /etc/pki/tls/
+COPY hosts /etc/hosts
 RUN chown -R root:root /var/opt/cprocsp/keys/root
 #VOLUME ["/var/opt/cprocsp", "/etc/nginx/conf.d"]
 EXPOSE 80 443
