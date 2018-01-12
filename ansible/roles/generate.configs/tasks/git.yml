@@ -9,13 +9,6 @@
 
 #- name: Git checkout Cryptopro
 #  shell: cd "{{ target_dir }}"/docker && git checkout cryptopro && mv cryptopro/* .. && rm -rf "{{ target_dir }}"/docker
-- name: Git pull swarm
-  git:
-    repo: ssh://git@git.sdsys.ru:8022/sdsys/swarm.git
-    dest: "{{ target_dir }}/swarm"
-    key_file: /run/secrets/provision-ssh-key
-    accept_hostkey: yes
-    version: master
 
 - name: Git pull Bundle
   git:
