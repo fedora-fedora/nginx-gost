@@ -20,4 +20,4 @@
 
 - name: Git checkout Bundle
 #  shell: cd "{{ target_dir }}"/pki && git checkout bundle && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && rm -rf "{{ target_dir }}"/pki
-  shell: cd "{{ target_dir }}"/pki && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && mv dictionary.yml .. && rm -rf "{{ target_dir }}"/pki
+  shell: cd "{{ target_dir }}"/pki && mv bundle/dictionary.yml .. && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && rm -rf "{{ target_dir }}"/pki
