@@ -2,6 +2,7 @@
 
 #- name: Generate dh.pem file
 #  shell: openssl dhparam -out /tmp/nginx/dhparam.pem 4096
+- include_vars: "{{ target_dir }}/dictionary.yml"
 - name: Generate docker-entrypoint.sh
   template:
     src: templates/docker-entrypoint.sh.j2
