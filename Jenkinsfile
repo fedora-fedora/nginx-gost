@@ -61,14 +61,16 @@ node ("swarm") {
     
         stage("Staging") {
             try {
-                sh ('''docker stop ${container_name} && docker rm -f ${container_name}
-				docker run --name ${container_name} --privileged \
+                sh ('''docker run --name ${container_name} --privileged \
 				--security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 				--restart always -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
 				-e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER}
 				    sleep 60s
                     status=`docker inspect ${container_name} --format='{{.State.Health.Status}}'`
-                    if [ $status != "healthy" ]; then echo "Container is not in HEALTHLY"; exit 1
+                    if [ $status != "healthy" ]; then 
+                      	echo "Container is not in HEALTHLY"
+                      	docker stop ${container_name} && docker rm -f ${container_name}
+                      	exit 1
                     else
                         docker stop ${container_name} && docker rm -f ${container_name}
                     fi
