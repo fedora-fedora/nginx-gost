@@ -87,10 +87,10 @@ node ("swarm") {
                 deleteDir()
 				sh 'docker rmi -f ${docker_registry}/${docker_image}:${BUILD_NUMBER}'
 				throw err
-            } finally {
+            } /* finally {
                 sh ('''docker stop ${container_name}
                 ''')
-                
+*/                
             }
 		}
         stage("Publish") {
