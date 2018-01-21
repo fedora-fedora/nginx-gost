@@ -69,10 +69,12 @@ node ("swarm") {
                     status=`docker inspect ${container_name} --format='{{.State.Health.Status}}'`
                     if [ $status != "healthy" ]
                     then
+                      echo ${container_name} not healthy
                       docker stop ${container_name} && docker rm -f ${container_name}
                       exit 1
                     else
-                        docker stop ${container_name} && docker rm -f ${container_name}
+                      echo ${container_name} is healthy
+                      docker stop ${container_name} && docker rm -f ${container_name}
                     fi
                 ''')
             } catch(err) {
@@ -90,9 +92,9 @@ node ("swarm") {
             } /* finally {
                 sh ('''docker stop ${container_name}
                 ''')
-*/                
+               
             }
-		}
+*/		}
         stage("Publish") {
 			try {
 				sh ('''docker push ${docker_registry}/${docker_image}:${BUILD_NUMBER}
