@@ -67,10 +67,7 @@ node ("swarm") {
 				-e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER}
 				    sleep 60s
                     status=`docker inspect ${container_name} --format='{{.State.Health.Status}}'`
-                    if [ $status != "healthy" ]; then 
-                      	echo "Container is not in HEALTHLY"
-                      	docker stop ${container_name} && docker rm -f ${container_name}
-                      	exit 1
+                    if [ $status != "healthy" ]; then docker stop ${container_name} && docker rm -f ${container_name}; exit 1
                     else
                         docker stop ${container_name} && docker rm -f ${container_name}
                     fi
