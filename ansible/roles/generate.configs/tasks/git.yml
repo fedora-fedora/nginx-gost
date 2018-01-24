@@ -16,6 +16,7 @@
     dest: "{{ target_dir }}/pki"
     key_file: /run/secrets/provision-ssh-key
     accept_hostkey: yes
+    version: master
 
 - name: Git checkout Bundle
 #  shell: cd "{{ target_dir }}"/pki && git checkout bundle && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && rm -rf "{{ target_dir }}"/pki
