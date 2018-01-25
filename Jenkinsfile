@@ -16,7 +16,7 @@ node ("swarm") {
 		"cluster_name=dev-iru-swarm",
 		"domain_name=infoclinica.lan",
 		"mailfrom=jenkins.dev@sdsys.ru",
-		"mailto=tomishinets.v@sdsys.ru",
+		"mailto=admin@sdsys.ru",
 		"swarm_git_mail=jenkins.dev@sdsys.ru",
         "swarm_git_user=provision",
 		"swarm_git_url=ssh://git@git.sdsys.ru:8022/sdsys/swarm.git",
