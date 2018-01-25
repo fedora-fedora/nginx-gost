@@ -118,7 +118,7 @@ node ("swarm") {
 			try {
 				sh (''' ping -c 2 ${cluster_name}1.${domain_name}
 				if [ $? -eq 0 ]; then
-					export DOCKER_CERT_PATH=/run/secrets/${cluster_name}
+					export DOCKER_CERT_PATH=/run/secrets/swarm
 					export DOCKER_HOST=tcp://${cluster_name}1.${domain_name}:2376 DOCKER_TLS_VERIFY=1
 					docker node ls --format "{{.Hostname}} {{.TLSStatus}}" | while read host status
 					do
@@ -143,7 +143,7 @@ node ("swarm") {
 				throw err
 				}	
 			try {
-				sh ('''export DOCKER_CERT_PATH=/run/secrets/${cluster_name}
+				sh ('''export DOCKER_CERT_PATH=/run/secrets/swarm
 					export DOCKER_HOST=tcp://${cluster_name}1.${domain_name}:2376 DOCKER_TLS_VERIFY=1
 					current_image=`docker inspect ${container_name} --format='{{.Config.Image}}'`
 					docker node ls --format "{{.Hostname}}" | while read host
