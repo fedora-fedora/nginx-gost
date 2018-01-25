@@ -19,7 +19,7 @@ node ("swarm") {
 		"mailto=admin@sdsys.ru",
 		"swarm_git_mail=jenkins.dev@sdsys.ru",
         "swarm_git_user=provision",
-		"swarm_git_url=ssh://git@git.sdsys.ru:8022/sdsys/swarm.git",
+		"swarm_git_url=ssh://git@git.sdsys.ru:8022/iru/stack-deploy.git",
 		
     ]) {
 		stage("Pull") {
@@ -191,7 +191,7 @@ node ("swarm") {
 			try {
 			    sh ('''GIT_SSH_COMMAND='ssh -i ${jenkins_ssh_key} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
 					git clone ${swarm_git_url}
-					cd ${WORKSPACE}/swarm
+					cd ${WORKSPACE}/stack-deploy
 					echo ${docker_registry}/${docker_image}:${BUILD_NUMBER} > tags/nginx-gost.version
 					git config --global user.email "${swarm_git_mail}"
 					git config --global user.name "${swarm_git_user}"
