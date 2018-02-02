@@ -97,8 +97,11 @@ node ("swarm") {
 */		}
         stage("Publish") {
 			try {
-				sh ('''docker push ${docker_registry}/${docker_image}:${BUILD_NUMBER}
-				if [ $? -eq 1 ]; then echo "Can not push a  ${docker_registry}/${docker_image}:${BUILD_NUMBER}"; exit 1; fi
+				sh ('''docker tag ${docker_registry}/${docker_image}:${BUILD_NUMBER}  ${docker_registry}/${docker_image}:latest
+                      docker push ${docker_registry}/${docker_image}:${BUILD_NUMBER}
+                if [ $? -eq 1 ]; then echo "Can not push a  ${docker_registry}/${docker_image}:${BUILD_NUMBER}"; exit 1; fi
+                      docker push ${docker_registry}/${docker_image}:latest
+                if [ $? -eq 1 ]; then echo "Can not push a  ${docker_registry}/${docker_image}:latest"; exit 1; fi      
 				''')
 			} catch (err) {
 			    currentBuild.result = "FAILURE"
