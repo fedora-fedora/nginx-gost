@@ -152,7 +152,10 @@ node ("swarm") {
 					docker node ls --format "{{.Hostname}}" | while read host
 					do
 						export DOCKER_HOST=tcp://${host}:2376 DOCKER_TLS_VERIFY=1
-						docker stop ${container_name} && sleep 60 && docker rm -f ${container_name}
+                        state=`docker inspect --format='{{.State.Running}}' ${container_name}`
+                      if [ ${state} == true ]; then
+                        docker stop ${container_name} && sleep 60 && docker rm -f ${container_name}
+                      fi
 						docker run -p 443:443 -p 80:80 --name cprocsp6 --privileged --security-opt seccomp=unconfined \
 						--tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy --restart always \
 						-d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
