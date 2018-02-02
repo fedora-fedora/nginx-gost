@@ -3,6 +3,8 @@
 #Осуществляем запуск Cryptopro
 service cprocsp start
 
+if [ -f /tmp/ready ]; then cat /tmp/iru-hosts >> /etc/hosts
+else
 #Указываем место нахождения libcurl
 /opt/cprocsp/sbin/amd64/cpconfig -ini \\config\\apppath -add string libcurl.so /usr/lib64/libcurl.so
 
@@ -38,5 +40,8 @@ sed -i "s/user  nginx;/user  root;/" /etc/nginx/nginx.conf
 # Дописываем имена в /etc/hosts
 
 cat /tmp/iru-hosts >> /etc/hosts
+
+touch /tmp/ready
+fi
 
 exec "$@"
