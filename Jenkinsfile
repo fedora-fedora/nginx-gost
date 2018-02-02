@@ -192,7 +192,7 @@ node ("swarm") {
 			    sh ('''GIT_SSH_COMMAND='ssh -i ${jenkins_ssh_key} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
 					git clone ${swarm_git_url}
 					cd ${WORKSPACE}/stack-deploy
-					echo ${docker_registry}/${docker_image}:${BUILD_NUMBER} > tags/nginx-gost.version
+					echo ${BUILD_NUMBER} > tags/nginx-gost.version
 					git config --global user.email "${swarm_git_mail}"
 					git config --global user.name "${swarm_git_user}"
 					git add --all
