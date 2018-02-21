@@ -79,6 +79,12 @@
     dest: "{{ target_dir }}/conf.d/repo.infoclinica.ru.conf"
   with_dict: "{{ infoclinica }}"
 
+- name: Generate for kibana.infoclinica.ru
+  template:
+    src: templates/kibana.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/kibana.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
 - name: Generate for web.infoclinica.ru
   template:
     src: templates/web.infoclinica.ru.conf.j2
