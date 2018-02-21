@@ -36,6 +36,7 @@ COPY keys/gost.infoclinica.ru.cer /etc/pki/tls/certs/
 #COPY keys/nginx.cer /tmp/nginx.cer
 COPY conf.d/ /etc/nginx/conf.d/
 COPY bundle/ /etc/pki/tls/
+COPY keys/kibana.passwd /etc/nginx/kibana.passwd
 RUN chown -R root:root /var/opt/cprocsp/keys/root
 #VOLUME ["/var/opt/cprocsp", "/etc/nginx/conf.d"]
 EXPOSE 80 443
