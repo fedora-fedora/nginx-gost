@@ -7,7 +7,8 @@ server {
 
                 location /
                 {
-                        proxy_pass              http://kibana:5601;
+                        set                     $backend_servers kibana;
+                        proxy_pass              http://$backend_servers:5601;
                         proxy_redirect          off;
                         proxy_set_header        Host    $host;
                         proxy_set_header        X-Real-Ip       $remote_addr;
