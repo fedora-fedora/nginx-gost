@@ -24,7 +24,7 @@ node ("swarm") {
     ]) {
 		stage("Pull") {
 			try {
-				sh "echo Running on $(docker info -f '{{.Name}}'"
+				sh 'echo Running on "$(docker info -f {{.Name}})"'
 				git url: "${nginx_gost_git_url}"
 			} catch(err) {
 				currentBuild.result = "FAILURE"
