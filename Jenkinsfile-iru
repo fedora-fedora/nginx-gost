@@ -24,6 +24,7 @@ node ("swarm") {
     ]) {
 		stage("Pull") {
 			try {
+				sh "echo Running on $(docker info -f '{{.Name}}'"
 				git url: "${nginx_gost_git_url}"
 			} catch(err) {
 				currentBuild.result = "FAILURE"
@@ -70,6 +71,7 @@ node ("swarm") {
                     if [ $status != "healthy" ]
                     then
                       echo ${container_id} not healthy
+                      docker logs ${container_id}
                       docker stop ${container_id} && docker rm -f ${container_id}
                       exit 1
                     else
@@ -87,7 +89,7 @@ node ("swarm") {
 					to: "${mailto}",
 					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Staging <b><br>\nURL Build:</b> ${env.BUILD_URL}"
                 deleteDir()
-				sh 'docker rmi -f ${docker_registry}/${docker_image}:${BUILD_NUMBER}'
+				sh "docker rmi -f ${docker_registry}/${docker_image}:${BUILD_NUMBER}"
 				throw err
             } /* finally {
                 sh ('''docker stop ${container_name}
