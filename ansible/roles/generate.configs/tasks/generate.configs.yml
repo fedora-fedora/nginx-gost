@@ -85,6 +85,12 @@
     dest: "{{ target_dir }}/conf.d/logs.infoclinica.ru.conf"
   with_dict: "{{ infoclinica }}"
 
+- name: Generate for monitor.infoclinica.ru
+  template:
+    src: templates/monitor.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/monitor.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
 - name: Generate for web.infoclinica.ru
   template:
     src: templates/web.infoclinica.ru.conf.j2
