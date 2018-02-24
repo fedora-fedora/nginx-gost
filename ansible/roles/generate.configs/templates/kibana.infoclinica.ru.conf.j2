@@ -1,6 +1,6 @@
 server {
                 listen 443 ssl;
-                server_name kibana.{{ item.value.sitename }} dev-kibana.{{ item.value.sitename }};
+                server_name logs.{{ item.value.sitename }} dev-logs.{{ item.value.sitename }};
 
                 ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert_bundle }};
                 ssl_certificate_key /etc/pki/tls/private/{{ item.value.key_bundle }};
