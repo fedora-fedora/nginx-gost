@@ -7,6 +7,7 @@ pipeline {
     JENKINS_SSH_KEY='/run/secrets/provision-ssh-key'
     DOCKER_IMAGE='nginx-gost'
     SERVICE_NAME='nginx-gost'
+    SERVICE_IMAGE='container_run'
     DOCKER_REGISTRY='dev-registry.infoclinica.ru:5000'
 	CLUSTER_NAME='dev-iru-swarm.infoclinica.lan'
 	JENKINS_MAIL='jenkins.dev@sdsys.ru'
