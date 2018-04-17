@@ -19,6 +19,7 @@ RUN set -x \
                         https://git.sdsys.ru/sdsys/docker/raw/bda498df1cb6cf0e7a26fd6e5aaac0c9fab35baf/cryptopro/distributive/cprocsp-cpopenssl-gost-64-4.0.0-4.x86_64.rpm \
                         nginx \
             && yum clean all \
+            && rm -rf /var/cache/yum \
             && ln -s /usr/lib64/libcurl.so.4.1.1 /usr/lib64/libcurl.so
 
 ENTRYPOINT ["/tmp/docker-entrypoint.sh"]
