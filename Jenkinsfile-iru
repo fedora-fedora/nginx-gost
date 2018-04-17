@@ -1,239 +1,151 @@
-node ("swarm") {
-	stage("Clear Work Space") {
-		try {
-			deleteDir()
-		} catch(err) {
-			throw err
-		}
-	}
+pipeline {
+  agent {
+    label "swarm"
+  }
+  environment {
+    NGINX_GOST_GIT_URL='https://git.sdsys.ru/iru/nginx-gost.git'
+    JENKINS_SSH_KEY='/run/secrets/provision-ssh-key'
+    DOCKER_IMAGE='nginx-gost'
+    SERVICE_NAME='nginx-gost'
+    SERVICE_IMAGE='container_run'
+    DOCKER_REGISTRY='dev-registry.infoclinica.ru:5000'
+    CLUSTER_NAME='dev-iru-swarm.infoclinica.lan'
+    JENKINS_MAIL='jenkins.dev@sdsys.ru'
+    SWARM_GIT_NAME='stack-deploy'
+    SWARM_GIT_URL='ssh://git@git.sdsys.ru:8022/iru/stack-deploy.git'
+    PARAMS_FOR_CONTAINER='--privileged --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER}'
 
-    withEnv([
-		"nginx_gost_git_url=https://git.sdsys.ru/iru/nginx-gost.git",
-        "jenkins_ssh_key=/run/secrets/provision-ssh-key",
-        "docker_image=nginx-gost",
-        "container_name=cprocsp6",
-        "docker_registry=dev-registry.infoclinica.ru:5000",
-		"cluster_name=dev-iru-swarm",
-		"domain_name=infoclinica.lan",
-		"mailfrom=jenkins.dev@sdsys.ru",
-		"mailto=admin@sdsys.ru",
-		"swarm_git_mail=jenkins.dev@sdsys.ru",
-        "swarm_git_user=provision",
-		"swarm_git_url=ssh://git@git.sdsys.ru:8022/iru/stack-deploy.git",
-		
-    ]) {
-		stage("Pull") {
-			try {
-				sh 'echo Running on "$(docker info -f {{.Name}})"'
-				git url: "${nginx_gost_git_url}"
-			} catch(err) {
-				currentBuild.result = "FAILURE"
-                String error = "${err}";
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}  Pull nginx-gost failed\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Pull <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-                deleteDir()
-                throw err
-			}
-		}
-        stage("Build") {
-            try {
-                sh ('''ansible-playbook -e target_dir=${WORKSPACE} ${WORKSPACE}/ansible/generate.configs.yml
-				    if [ $? -eq 1 ]; then echo "Can not play ansible playbook"; exit 1; fi
-					docker build -t ${docker_registry}/${docker_image}:${BUILD_NUMBER} ${WORKSPACE}/
-					if [ $? -eq 1 ]; then echo "Can not build a  ${docker_registry}/${docker_image}:${BUILD_NUMBER}"; exit 1; fi
-				''')
-            } catch(err) {
-				currentBuild.result = "FAILURE"
-                String error = "${err}";
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Build <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-                deleteDir()
-                throw err
-            } 
-        } 
-    
-        stage("Staging") {
-            try {
-                sh ('''export container_id=$(docker run --privileged \
-				--security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-				--restart always -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-				-e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER})
-				    sleep 60s
-                    status=`docker inspect ${container_id} --format='{{.State.Health.Status}}'`
-                    if [ $status != "healthy" ]
-                    then
-                      echo ${container_id} not healthy
-                      docker logs ${container_id}
-                      docker stop ${container_id} && docker rm -f ${container_id}
-                      exit 1
-                    else
-                      echo ${container_id} is healthy
-                      docker stop ${container_id} && docker rm -f ${container_id}
-                    fi
-                ''')
-            } catch(err) {
-				currentBuild.result = "FAILURE"
-                String error = "${err}";
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Staging <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-                deleteDir()
-				sh "docker rmi -f ${docker_registry}/${docker_image}:${BUILD_NUMBER}"
-				throw err
-            } /* finally {
-                sh ('''docker stop ${container_name}
-                ''')
-               
-            }
-*/		}
-        stage("Publish") {
-			try {
-				sh ('''docker tag ${docker_registry}/${docker_image}:${BUILD_NUMBER} ${docker_registry}/${docker_image}:latest
-                      docker push ${docker_registry}/${docker_image}:${BUILD_NUMBER}
-                if [ $? -eq 1 ]; then echo "Can not push a  ${docker_registry}/${docker_image}:${BUILD_NUMBER}"; exit 1; fi
-                      docker push ${docker_registry}/${docker_image}:latest
-                if [ $? -eq 1 ]; then echo "Can not push a  ${docker_registry}/${docker_image}:latest"; exit 1; fi      
-				''')
-			} catch (err) {
-			    currentBuild.result = "FAILURE"
-                String error = "${err}";
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Publish <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-				deleteDir()
-				throw err
-			}	
-        }
-    
-        stage("Prod-like") {
-			try {
-				sh (''' ping -c 2 ${cluster_name}1.${domain_name}
-				if [ $? -eq 0 ]; then
-					export DOCKER_CERT_PATH=/run/secrets/swarm
-					export DOCKER_HOST=tcp://${cluster_name}1.${domain_name}:2376 DOCKER_TLS_VERIFY=1
-					docker node ls --format "{{.Hostname}} {{.TLSStatus}}" | while read host status
-					do
-						if [ $status != Ready ]; then echo "Cluster ${cluster_name}.${domain_name} state is inconsistent"; exit 1
-						else echo "HOST: $host STATUS: $status"
-						fi
-					done
-				else echo "Host not Found"; exit 1
-				fi
-				''')
-			} catch(err) {
-				currentBuild.result = "FAILURE"
-				String error = "${err}";
-						
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Prod-like <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-				deleteDir()
-				throw err
-				}	
-			try {
-				sh ('''export DOCKER_CERT_PATH=/run/secrets/swarm
-					export DOCKER_HOST=tcp://${cluster_name}1.${domain_name}:2376 DOCKER_TLS_VERIFY=1
-					current_image=`docker inspect ${container_name} --format='{{.Config.Image}}'`
-					docker node ls --format "{{.Hostname}}" | while read host
-					do
-						export DOCKER_HOST=tcp://${host}:2376 DOCKER_TLS_VERIFY=1
-                        state=`docker inspect --format='{{.State.Running}}' ${container_name}`
-                      if [ ${state} == true ]; then
-                        docker stop ${container_name} && sleep 60 && docker rm -f ${container_name}
-                      fi
-						docker run -p 443:443 -p 80:80 --name cprocsp6 --privileged --security-opt seccomp=unconfined \
-						--tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy --restart always \
-						-d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-						-e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER}
-						docker exec ${container_name} /bin/sh -c 'while read ip host; do curl -f ${host};done < /tmp/iru-hosts'
-						if [ $? -eq 1 ]; then
-							export DOCKER_HOST=tcp://${cluster_name}1.${domain_name}:2376 DOCKER_TLS_VERIFY=1 
-							docker node ls --format "{{.Hostname}}" | while read host1
-							do
-								export DOCKER_HOST=tcp://${host1}:2376 DOCKER_TLS_VERIFY=1
-								some_image=`docker inspect ${container_name} --format='{{.Config.Image}}'`
-								if [ ${some_image} != ${current_image} ]; then
-									docker stop ${container_name} && sleep 60 && docker rm -f ${container_name}
-									docker run -p 443:443 -p 80:80 --name cprocsp6 --privileged --security-opt seccomp=unconfined \
-									--tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy --restart always \
-									-d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-									-e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${current_image}
-									echo "Return old image and exit"
-									exit 1
-								fi
-							done
-						fi
-					done
-					
-				''') 
-			} catch(err) {
-				currentBuild.result = "FAILURE"
-				String error = "${err}";
-						
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Prod-like <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-				deleteDir()
-				throw err    
-			}
-			try {
-			    sh ('''GIT_SSH_COMMAND='ssh -i ${jenkins_ssh_key} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-					git clone ${swarm_git_url}
-					cd ${WORKSPACE}/stack-deploy
-					echo ${BUILD_NUMBER} > tags/nginx-gost.version
-					git config --global user.email "${swarm_git_mail}"
-					git config --global user.name "${swarm_git_user}"
-					git add --all
-					git commit -m "Update version of nginx-gost"
-					GIT_SSH_COMMAND='ssh -i ${jenkins_ssh_key} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-					git push origin master
-					rm -rf ~/.gitconfig
-				''')
-			} catch(err) {
-			    currentBuild.result = "FAILURE"
-				String error = "${err}";
-						
-				mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Ошибка Jenkins CI/CD: Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСообщение об ошибке:</b> ${error}\n\n Ошибка обновления тэга версии!!!<b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Prod-like <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-				deleteDir()
-				throw err
-			} 
-			try {
-			    currentBuild.result = "SUCCESS"
-			    mail charset: 'UTF-8',
-					from: "${mailfrom}",
-					mimeType: 'text/html',
-					subject: "Сборка успешно завешена! Имя проекта -> ${env.JOB_NAME}",
-					to: "${mailto}",
-					body: "<b>Внимание!!!</b> <b><br>\n\nСборка успешно завешена!<b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nStage Name:</b> Prod-like <b><br>\nURL Build:</b> ${env.BUILD_URL}"
-				deleteDir()
-			} catch(err) {
-			    throw err
-			}
-        }
-	}
+  }
+  parameters {
+    string(
+      name: "mailto",
+      defaultValue: "tomishinets.v@sdsys.ru",
+      description: "Email which has to be notified."
+    )
+  }
+  stages {
+    stage("Build") {
+      steps {
+        sh '''ansible-playbook -e target_dir=${WORKSPACE} ${WORKSPACE}/ansible/generate.configs.yml
+              if [ $? -eq 1 ]; then echo "Can not play ansible playbook"; exit 1; fi
+              docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
+              if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
+           '''
+      }
+    }
+    stage("Staging") {
+      steps {
+        sh '''export container_id=$(docker run --privileged \
+              --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+              --rm -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
+              -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER})
+              sleep 60
+              status=`docker inspect ${container_id} --format='{{.State.Health.Status}}'`
+              if [ $status != "healthy" ]
+              then
+                 echo ${container_id} not healthy
+                 docker logs ${container_id}
+                 docker stop ${container_id}
+                 exit 1
+              else
+                 echo ${container_id} is healthy
+                 docker stop ${container_id}
+              fi
+           '''			  
+        
+      }
+    }
+    stage("Publish") {
+      steps {
+        sh '''echo "Push ${docker_image}"
+              docker push ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}
+           '''
+      }
+    }
+    stage("Prod-like") {
+      steps {
+        echo "Check Prod-like cluster status"
+        sh '''ping -c 2 ${CLUSTER_NAME}
+              if [ $? -eq 0 ]; then
+                export DOCKER_CERT_PATH=/run/secrets/swarm
+                export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
+                docker node ls --format "{{.Hostname}} {{.TLSStatus}}" | while read host status
+                do
+                  if [ $status != Ready ]; then echo "Cluster ${CLUSTER_NAME} state is inconsistent"; exit 1
+                  else echo "HOST: $host STATUS: $status"
+                  fi
+                done
+              else echo "Host not Found"; exit 1
+              fi
+           '''
+        echo "Run containers in Prod-like"
+        sh '''export DOCKER_CERT_PATH=/run/secrets/swarm
+              export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
+              if [ !$(docker service ps -q ${DOCKER_IMAGE}) ];then
+                docker service create --replicas 2 \
+                --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
+                --name ${SERVICE_NAME} ${DOCKER_REGISTRY}/${SERVICE_IMAGE}:1 -p 443:443 -p 80:80 \
+                --privileged --security-opt seccomp=unconfined \
+                --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
+                -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
+                -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
+                ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}
+              else
+                docker service update \
+                --args "-p 443:443 -p 80:80 \
+                --privileged --security-opt seccomp=unconfined \
+                --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
+                -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
+                -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
+                ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}" \
+                ${SERVICE_NAME}
+                if [ $? != 0 ]; then docker service rollback ${SERVICE_NAME}; fi
+              fi
+           '''
+      }
+    }
+    stage("Tagging") {
+        steps {
+          echo "Tagging ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} to ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:latest"
+          sh '''docker tag ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:latest
+                docker push ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:latest
+             '''
+          echo "Updating tag info in ${SWARM_GIT_NAME} repository"
+          withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+            sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                  git clone ${SWARM_GIT_URL}
+                  cd ${SWARM_GIT_NAME}
+                  echo -n ${BUILD_NUMBER} > tags/${DOCKER_IMAGE}.version
+                  git add -A
+                  git config --global user.email "${JENKINS_MAIL}"
+                  git config --global user.name "Jenkins"
+                  git commit -m 'Version update'
+                  GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                  git push origin master
+               '''
+         }
+       }
+     }
+  }
+  post {
+    always {
+      echo "CleaningUp work directory"
+      deleteDir()
+    }
+    failure {
+      mail charset: 'UTF-8',
+           subject: "Jenkins build ERROR",
+           mimeType: 'text/html',
+           to: "${mailto}",
+           body: "<b>ATTENTION!!!</b> <b><br> Jenkins job failed.\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nURL Build:</b> ${RUN_DISPLAY_URL}"
+    }
+    success {
+      mail charset: 'UTF-8',
+           subject: "Jenkins build SUSCCESS",
+           mimeType: 'text/html',
+           to: "${mailto}",
+           body: "<b>Congradulations!!!</b> <b><br> Jenkins job succefully finished.\n\n <b><br>Project Name:</b> ${env.JOB_NAME} <b><br>\nBuild Number:</b> ${env.BUILD_NUMBER} <b><br>\nURL Build:</b> ${RUN_DISPLAY_URL}"
+    }
+  }
 }
