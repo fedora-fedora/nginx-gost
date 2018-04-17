@@ -1,4 +1,4 @@
-FROM centos:6.9
+FROM centos:7
 
 #Копируем файл репозитория
 COPY configs/nginx.repo /etc/yum.repos.d/nginx.repo
