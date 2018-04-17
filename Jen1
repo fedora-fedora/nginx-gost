@@ -38,7 +38,7 @@ pipeline {
 	    sh '''export container_id=$(docker run --privileged \
 		      --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
               --rm -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-              -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${BUILD_NUMBER})
+              -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER})
               sleep 60
               status=`docker inspect ${container_id} --format='{{.State.Health.Status}}'`
               if [ $status != "healthy" ]
