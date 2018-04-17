@@ -8,7 +8,7 @@ COPY configs/openssl.cnf /etc/pki/tls/openssl.cnf
 
 #Ставим необходимое СПО и КриптоПро заисключением lsb-cprocsp-kc2-64-4.0.0-4.x86_64.rpm! Его необходимо инсталировать через docker-entrypoint!!! Линкуем библиотеку.
 RUN set -x \
-           && yum install -y redhat-lsb-core libcurl \
+           && yum install -y redhat-lsb-core libcurl initscripts\
            && yum install -y https://git.sdsys.ru/sdsys/docker/raw/bda498df1cb6cf0e7a26fd6e5aaac0c9fab35baf/cryptopro/distributive/lsb-cprocsp-base-4.0.0-4.noarch.rpm \
                         https://git.sdsys.ru/sdsys/docker/raw/bda498df1cb6cf0e7a26fd6e5aaac0c9fab35baf/cryptopro/distributive/lsb-cprocsp-rdr-64-4.0.0-4.x86_64.rpm \
                         https://git.sdsys.ru/sdsys/docker/raw/bda498df1cb6cf0e7a26fd6e5aaac0c9fab35baf/cryptopro/distributive/lsb-cprocsp-capilite-64-4.0.0-4.x86_64.rpm \
