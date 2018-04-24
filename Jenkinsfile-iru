@@ -87,7 +87,7 @@ pipeline {
                 --name ${SERVICE_NAME} ${DOCKER_REGISTRY}/${SERVICE_IMAGE}:1 -p 443:443 -p 80:80 \
                 --privileged --security-opt seccomp=unconfined \
                 --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
-                -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
+                -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
                 -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
                 ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}
               else
@@ -95,7 +95,7 @@ pipeline {
                 --args "-p 443:443 -p 80:80 \
                 --privileged --security-opt seccomp=unconfined \
                 --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
-                -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
+                -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
                 -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
                 ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}" \
                 ${SERVICE_NAME}
