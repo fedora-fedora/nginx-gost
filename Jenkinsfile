@@ -28,4 +28,10 @@ pipeline {
       }
     }
   }
+  post {
+    always {
+      echo "CleaningUp work directory"
+      deleteDir()
+    }
+  }
 }
