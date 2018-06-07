@@ -27,13 +27,32 @@ pipeline {
     stage("Build") {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+          sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                git clone https://git.sdsys.ru/iru/nginx-gost.git
+             '''
+        }
+        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+          sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                git clone ssh://git@git.sdsys.ru:8022/sdsys/pki.git ${WORKSPACE}/pki
+             '''
+        }
+        ansiColor('xterm') {
+          ansiblePlaybook(
+            playbook: '${WORKSPACE}/ansible/generate.configs.yml',
+            extraVars: [
+              target_dir: '${WORKSPACE}',
+            ],
+            colorized: true)
+        }
+/*
+        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''ansible-playbook -e target_dir=${WORKSPACE} -e ssh_key=${GIT_SSH_KEY} ${WORKSPACE}/ansible/generate.configs.yml
                 if [ $? -eq 1 ]; then echo "Can not play ansible playbook"; exit 1; fi
                 docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
                 if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
              '''
         }
-      }
+*/      }
     }
     stage("Staging") {
       steps {
