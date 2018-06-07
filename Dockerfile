@@ -20,7 +20,9 @@ RUN set -x \
                         nginx \
             && yum clean all \
             && rm -rf /var/cache/yum \
-            && ln -s /usr/lib64/libcurl.so.4.1.1 /usr/lib64/libcurl.so
+            && ln -s /usr/lib64/libcurl.so.4.1.1 /usr/lib64/libcurl.so \
+            && ln -sf /dev/stdout /var/log/nginx/access.log \
+            && ln -sf /dev/stderr /var/log/nginx/error.log
 
 ENTRYPOINT ["/tmp/docker-entrypoint.sh"]
 
