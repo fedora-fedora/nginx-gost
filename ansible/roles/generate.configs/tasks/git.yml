@@ -10,6 +10,7 @@
 #- name: Git checkout Cryptopro
 #  shell: cd "{{ target_dir }}"/docker && git checkout cryptopro && mv cryptopro/* .. && rm -rf "{{ target_dir }}"/docker
 
+# Comment in Redmine 93106
 #- name: Git pull Bundle
 #  git:
 #    repo: ssh://git@git.sdsys.ru:8022/sdsys/pki.git
