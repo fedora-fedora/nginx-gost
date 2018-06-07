@@ -14,7 +14,8 @@
   git:
     repo: ssh://git@git.sdsys.ru:8022/sdsys/pki.git
     dest: "{{ target_dir }}/pki"
-    key_file: /run/secrets/provision-ssh-key
+    key_file: "{{ ssh_key }}"
+#    key_file: /run/secrets/provision-ssh-key
     accept_hostkey: yes
     version: master
 
