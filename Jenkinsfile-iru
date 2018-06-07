@@ -44,6 +44,9 @@ pipeline {
             ],
             colorized: true)
         }
+        sh '''docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
+              if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
+           '''
 /*
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''ansible-playbook -e target_dir=${WORKSPACE} -e ssh_key=${GIT_SSH_KEY} ${WORKSPACE}/ansible/generate.configs.yml
