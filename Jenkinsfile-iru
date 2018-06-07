@@ -105,7 +105,7 @@ pipeline {
         echo "Run containers in Prod-like"
         sh '''export DOCKER_CERT_PATH=/run/secrets/swarm
               export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
-              if [ !$(docker service ps -q ${DOCKER_IMAGE}) ];then
+              if [ -z $(docker service ps -q ${DOCKER_IMAGE}) ];then
                 docker service create --replicas 2 \
                 --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
                 --name ${SERVICE_NAME} ${DOCKER_REGISTRY}/${SERVICE_IMAGE}:1 -p 443:443 -p 80:80 \
