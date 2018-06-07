@@ -5,6 +5,6 @@
   vars:
     target_dir: "{{ build_dir|default('~/nginx') }}"
   roles:
-#    - generate.configs
-    - { role: generate.configs, key: ssh_key }
+    - generate.configs
+#    - { role: generate.configs, key: ssh_key }
 
