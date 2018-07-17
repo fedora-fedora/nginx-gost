@@ -104,4 +104,23 @@ exclusive:
     sitename: online.boscoclinica.ru
     cert: online.boscoclinica.ru.crt
     key: online.boscoclinica.ru.key
-
+  lk.bzklinika.ru:
+    sitename: lk.bzklinika.ru
+    cert: lk.bzklinika.ru.crt
+    key: lk.bzklinika.ru.key
+  lk.flamingomed.com:
+    sitename: lk.flamingomed.com
+    cert: lk.flamingomed.com.crt
+    key: lk.flamingomed.com.key
+  lk.gmc24.org:
+    sitename: lk.gmc24.org
+    cert: lk.gmc24.org.crt
+    key: lk.gmc24.org.key
+  lk.med-sp.com:
+    sitename: lk.med-sp.com
+    cert: lk.med-sp.com.crt
+    key: lk.med-sp.com.key
+  my.mc21.ru:
+    sitename: my.mc21.ru
+    cert: my.mc21.ru.crt
+    key: my.mc21.ru.key
