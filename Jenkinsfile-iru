@@ -11,6 +11,7 @@ pipeline {
     DOCKER_REGISTRY='dev-registry.infoclinica.ru:5000'
     CLUSTER_NAME='dev-iru-swarm.infoclinica.lan'
     JENKINS_MAIL='jenkins.dev@sdsys.ru'
+    PKI_GIT_URL='ssh://git@git.sdsys.ru:8022/sdsys/pki.git'
     SWARM_GIT_NAME='stack-deploy'
     SWARM_GIT_URL='ssh://git@git.sdsys.ru:8022/iru/stack-deploy.git'
     PARAMS_FOR_CONTAINER='--privileged --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${docker_registry}/${docker_image}:${BUILD_NUMBER}'
@@ -33,7 +34,7 @@ pipeline {
         }
 */        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                git clone ssh://git@git.sdsys.ru:8022/sdsys/pki.git ${WORKSPACE}/pki
+                git clone ${PKI_GIT_URL}
              '''
         }
         ansiColor('xterm') {
