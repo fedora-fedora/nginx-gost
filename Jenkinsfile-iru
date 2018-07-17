@@ -27,12 +27,7 @@ pipeline {
   stages {
     stage("Build") {
       steps {
-/*        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
-          sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                git clone https://git.sdsys.ru/iru/nginx-gost.git
-             '''
-        }
-*/        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                 git clone ${PKI_GIT_URL}
              '''
@@ -80,7 +75,7 @@ pipeline {
         
       }
     }
-/*    stage("Publish") {
+    stage("Publish") {
       steps {
         sh '''echo "Push ${docker_image}"
               docker push ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}
@@ -152,7 +147,7 @@ pipeline {
          }
        }
      }
-*/  }
+  }
   post {
     always {
       echo "CleaningUp work directory"
