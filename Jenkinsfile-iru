@@ -6,7 +6,7 @@ pipeline {
     NGINX_GOST_GIT_URL='https://git.sdsys.ru/iru/nginx-gost.git'
     JENKINS_SSH_KEY='/run/secrets/provision-ssh-key'
     DOCKER_IMAGE='nginx-gost'
-    SERVICE_NAME='nginx-gost'
+    SERVICE_NAME='proxy_nginx-gost'
     SERVICE_IMAGE='container_run'
     DOCKER_REGISTRY='dev-registry.infoclinica.ru:5000'
     CLUSTER_NAME='dev-iru-swarm.infoclinica.lan'
@@ -101,7 +101,7 @@ pipeline {
         echo "Run containers in Prod-like"
         sh '''export DOCKER_CERT_PATH=/run/secrets/swarm
               export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
-              if [ -z $(docker service ps -q ${DOCKER_IMAGE}) ];then
+              if [ -z $(docker service ps -q ${SERVICE_NAME}) ];then
                 docker service create --replicas 2 \
                 --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
                 --name ${SERVICE_NAME} ${DOCKER_REGISTRY}/${SERVICE_IMAGE}:1 -p 443:443 -p 80:80 \
