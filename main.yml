@@ -40,6 +40,10 @@ exclusive:
     gost_engine: engine:gost_capi:*.infoclinica.ru
     gost_cert: gost.infoclinica.ru.cer
     gost_cert_pem: gost.infoclinica.ru.pem
+  storage.infoclinica.ru:
+    sitename: storage.infoclinica.ru
+    cert: web-infoclinica.full-bundle
+    key: web-infoclinica.key
   kabinet.pet-net.ru:
     sitename: kabinet.pet-net.ru
     cert: kabinet.pet-net.ru.pem
