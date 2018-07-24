@@ -93,12 +93,12 @@ pipeline {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
             sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                   git clone ${SWARM_GIT_URL}
-                  pushd ${SWARM_GIT_NAME}
+                  cd ${SWARM_GIT_NAME}
                   export DOCKER_CERT_PATH=/run/secrets/swarm
                   export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
                   ./proxy.sh
                   if (( $? != 0 )); then echo "Proxy stack deploy failed."; exit 1; fi
-                  popd
+                  cd ${WORKSPACE}
                '''
         }
       }
