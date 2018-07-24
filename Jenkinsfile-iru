@@ -66,7 +66,6 @@ pipeline {
            '''
       }
     }
-*/    
     stage("Publish") {
       steps {
         sh '''echo "Push ${docker_image}"
@@ -74,7 +73,7 @@ pipeline {
            '''
       }
     }
-    stage("Prod-like") {
+*/    stage("Prod-like") {
       steps {
         echo "Check Prod-like cluster status"
         sh '''ping -c 2 ${CLUSTER_NAME}
