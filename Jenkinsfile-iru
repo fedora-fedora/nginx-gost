@@ -27,7 +27,7 @@ pipeline {
   stages {
     stage("Build") {
       steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+/*        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                 git clone ${PKI_GIT_URL}
              '''
@@ -43,11 +43,11 @@ pipeline {
         sh '''docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
               if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
            '''
-      }
+*/      }
     }
     stage("Staging") {
       steps {
-        sh '''export container_id=$(docker run --privileged \
+/*        sh '''export container_id=$(docker run --privileged \
               --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
               --rm -d -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
               -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER})
@@ -64,7 +64,7 @@ pipeline {
                  docker stop ${container_id}
               fi
            '''
-      }
+*/      }
     }
     stage("Publish") {
       steps {
@@ -96,6 +96,9 @@ pipeline {
                   cd ${SWARM_GIT_NAME}
                   export DOCKER_CERT_PATH=/run/secrets/swarm
                   export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
+                  docker node ls
+                  pwd
+                  ls -l
                   ./proxy.sh
                   if (( $? != 0 )); then echo "Proxy stack deploy failed."; exit 1; fi
                   cd ${WORKSPACE}
