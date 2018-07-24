@@ -94,6 +94,7 @@ pipeline {
             sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                   git clone ${SWARM_GIT_URL}
                   cd ${SWARM_GIT_NAME}
+                  echo -n ${BUILD_NUMBER} > tags/${DOCKER_IMAGE}.version
                   export DOCKER_CERT_PATH=/run/secrets/swarm
                   export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
                   ./proxy.sh
