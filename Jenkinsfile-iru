@@ -75,7 +75,7 @@ pipeline {
     }
 */    stage("Prod-like") {
       steps {
-        echo "Check Prod-like cluster status"
+/*        echo "Check Prod-like cluster status"
         sh '''ping -c 2 ${CLUSTER_NAME}
               if [ $? -eq 0 ]; then
                 export DOCKER_CERT_PATH=/run/secrets/swarm
@@ -90,15 +90,15 @@ pipeline {
               fi
            '''
         echo "Run containers in Prod-like"
-        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+*/        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
             sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                   git clone ${SWARM_GIT_URL}
                   cd ${SWARM_GIT_NAME}
                   export DOCKER_CERT_PATH=/run/secrets/swarm
                   export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
-                  docker node ls
+                  set
                   pwd
-                  ls -l
+                  ls -l proxy.sh
                   $(pwd)/proxy.sh
                   if (( $? != 0 )); then echo "Proxy stack deploy failed."; exit 1; fi
                   cd ${WORKSPACE}
