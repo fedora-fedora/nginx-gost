@@ -99,7 +99,7 @@ pipeline {
                   set
                   pwd
                   ls -l proxy.sh
-                  $(pwd)/proxy.sh
+                  /bin/sh $(pwd)/proxy.sh
                   if (( $? != 0 )); then echo "Proxy stack deploy failed."; exit 1; fi
                   cd ${WORKSPACE}
                '''
