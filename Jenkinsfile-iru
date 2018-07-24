@@ -43,15 +43,7 @@ pipeline {
         sh '''docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
               if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
            '''
-/*Comment in Redmine 93106
-        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
-          sh '''ansible-playbook -e target_dir=${WORKSPACE} -e ssh_key=${GIT_SSH_KEY} ${WORKSPACE}/ansible/generate.configs.yml
-                if [ $? -eq 1 ]; then echo "Can not play ansible playbook"; exit 1; fi
-                docker build --no-cache -t ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER} ${WORKSPACE}/
-                if [ $? -eq 1 ]; then echo "Can not build a  ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}"; exit 1; fi
-             '''
-        }
-*/      }
+      }
     }
     stage("Staging") {
       steps {
@@ -71,8 +63,7 @@ pipeline {
                  echo ${container_id} is healthy
                  docker stop ${container_id}
               fi
-           '''			  
-        
+           '''
       }
     }
     stage("Publish") {
@@ -99,29 +90,17 @@ pipeline {
               fi
            '''
         echo "Run containers in Prod-like"
-        sh '''export DOCKER_CERT_PATH=/run/secrets/swarm
-              export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
-              if [ -z $(docker service ps -q ${SERVICE_NAME}) ];then
-                docker service create --replicas 2 \
-                --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
-                --name ${SERVICE_NAME} ${DOCKER_REGISTRY}/${SERVICE_IMAGE}:1 -p 443:443 -p 80:80 \
-                --privileged --security-opt seccomp=unconfined \
-                --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
-                -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-                -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
-                ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}
-              else
-                docker service update \
-                --args "-p 443:443 -p 80:80 \
-                --privileged --security-opt seccomp=unconfined \
-                --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --network=proxy \
-                -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
-                -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" \
-                ${DOCKER_REGISTRY}/iru/${DOCKER_IMAGE}:${BUILD_NUMBER}" \
-                ${SERVICE_NAME}
-                if [ $? != 0 ]; then docker service rollback ${SERVICE_NAME}; fi
-              fi
-           '''
+        withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
+            sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                  git clone ${SWARM_GIT_URL}
+                  pushd ${SWARM_GIT_NAME}
+                  export DOCKER_CERT_PATH=/run/secrets/swarm
+                  export DOCKER_HOST=tcp://${CLUSTER_NAME}:2376 DOCKER_TLS_VERIFY=1
+                  ./proxy.sh
+                  if (( $? != 0 )); then echo "Proxy stack deploy failed."; exit 1; fi
+                  popd
+               '''
+        }
       }
     }
     stage("Tagging") {
@@ -133,9 +112,7 @@ pipeline {
              '''
           echo "Updating tag info in ${SWARM_GIT_NAME} repository"
           withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
-            sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                  git clone ${SWARM_GIT_URL}
-                  cd ${SWARM_GIT_NAME}
+            sh '''cd ${SWARM_GIT_NAME}
                   echo -n ${BUILD_NUMBER} > tags/${DOCKER_IMAGE}.version
                   git add -A
                   git config --global user.email "${JENKINS_MAIL}"
