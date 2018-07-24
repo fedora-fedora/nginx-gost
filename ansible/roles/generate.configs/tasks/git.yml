@@ -1,25 +1,9 @@
 ---
-#- name: Git pull Nginx Gost
-#  git:
-#    repo: ssh://git@git.sdsys.ru:8022/sdsys/docker.git
-#    dest: "{{ target_dir }}/docker"
-#    key_file: /run/secrets/ssh_key
-#    accept_hostkey: yes
-#    version: cryptopro
-
-#- name: Git checkout Cryptopro
-#  shell: cd "{{ target_dir }}"/docker && git checkout cryptopro && mv cryptopro/* .. && rm -rf "{{ target_dir }}"/docker
-
-# Comment in Redmine 93106
-#- name: Git pull Bundle
-#  git:
-#    repo: ssh://git@git.sdsys.ru:8022/sdsys/pki.git
-#    dest: "{{ target_dir }}/pki"
-#    key_file: "{{ key }}"
-#    key_file: /run/secrets/provision-ssh-key
-#    accept_hostkey: yes
-#    version: master
-
 - name: Git checkout Bundle
-#  shell: cd "{{ target_dir }}"/pki && git checkout bundle && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && rm -rf "{{ target_dir }}"/pki
-  shell: cd "{{ target_dir }}"/pki && mv bundle/dictionary.yml .. && mv bundle .. && mv tls/certs/web-infoclinica* ../bundle/certs && mv tls/private/web-infoclinica* ../bundle/private && rm -rf "{{ target_dir }}"/pki
+  shell: > 
+         cd "{{ target_dir }}"/pki && 
+         mv bundle/dictionary.yml .. &&
+         mv bundle .. &&
+         mv tls/certs/web-infoclinica* ../bundle/certs &&
+         mv tls/private/web-infoclinica* ../bundle/private &&
+         rm -rf "{{ target_dir }}"/pki
