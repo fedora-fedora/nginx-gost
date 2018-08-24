@@ -91,6 +91,18 @@
     dest: "{{ target_dir }}/conf.d/monitor.infoclinica.ru.conf"
   with_dict: "{{ infoclinica }}"
 
+- name: Generate for images.infoclinica.ru
+  template:
+    src: templates/images.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/images.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
+- name: Generate for swarm.infoclinica.ru
+  template:
+    src: templates/swarm.infoclinica.ru.conf.j2
+    dest: "{{ target_dir }}/conf.d/swarm.infoclinica.ru.conf"
+  with_dict: "{{ infoclinica }}"
+
 - name: Generate for web.infoclinica.ru
   template:
     src: templates/web.infoclinica.ru.conf.j2
