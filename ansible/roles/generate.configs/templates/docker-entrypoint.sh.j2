@@ -27,7 +27,7 @@ yum install -y /tmp/lsb-cprocsp-kc2-64-4.0.0-4.x86_64.rpm
 cd /etc/pki/tls/certs &&  /opt/cprocsp/cp-openssl/bin/amd64/openssl x509 -inform der -in {{ item.value.gost_cert }} -out {{ item.value.gost_cert_pem }}
 
 #Редактируем nginx.conf
-sed -i "s/user  nginx;/user  root;/" /etc/nginx/nginx.conf
+#sed -i "s/user  nginx;/user  root;/" /etc/nginx/nginx.conf
 
 #Подчищаем
 #rm -rf /tmp/nginx.cer /tmp/nginx.pem
