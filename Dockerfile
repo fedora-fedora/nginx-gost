@@ -38,6 +38,7 @@ COPY keys/infoclin.000 /var/opt/cprocsp/keys/root/
 COPY keys/gost.infoclinica.ru.cer /etc/pki/tls/certs/
 
 COPY conf.d/ /etc/nginx/conf.d/
+COPY configs/nginx.conf /etc/nginx/
 COPY bundle/ /etc/pki/tls/
 COPY keys/htaccess.passwd /etc/nginx/htaccess.passwd
 RUN chown -R root:root /var/opt/cprocsp/keys/root
