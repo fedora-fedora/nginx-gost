@@ -9,8 +9,8 @@ server {
     ssl_verify_client      on;
     ssl_crl                /etc/pki/tls/certs/{{ item.value.crl }};
 
-    access_log  /var/log/nginx/sms-access.log;
-    error_log   /var/log/nginx/sms-error.log debug;
+#    access_log  /var/log/nginx/sms-access.log;
+#    error_log   /var/log/nginx/sms-error.log debug;
 
         location / {
                 proxy_pass  https://xml.sms16.ru;

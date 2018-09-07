@@ -9,8 +9,8 @@ server {
     ssl_verify_client      on;
     ssl_crl                /etc/pki/tls/certs/{{ item.value.crl }};
 
-    access_log  /var/log/nginx/api-access.log;
-    error_log   /var/log/nginx/api-error.log debug;
+#    access_log  /var/log/nginx/api-access.log;
+#    error_log   /var/log/nginx/api-error.log debug;
 
         location /api {
                 proxy_set_header Host $http_x_forwarded_host;
