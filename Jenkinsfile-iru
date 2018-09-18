@@ -140,8 +140,8 @@ pipeline {
     always {
       echo "CleaningUp work directory"
       deleteDir()
-/*      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
-*/    }
+      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
+    }
     failure {
       mail charset: 'UTF-8',
            subject: "Jenkins build ERROR",
