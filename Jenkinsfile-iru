@@ -54,7 +54,7 @@ pipeline {
         echo "Staging ${DOCKER_IMAGE}:${SERIAL}"
         sh """set -x
               container_id=\$(docker run --privileged --security-opt seccomp=unconfined \
-                                  --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro --rm -d \
+                                  --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d \
                                   -e "ADMIN_LAB=dev-admin-lab.infoclinica.lan" -e "ADMIN_WEB=dev-admin-web.infoclinica.lan" \
                                   -e "NODE_LAB=node-lab.infoclinica.lan" -e "NODE_WEB=node-web.infoclinica.lan" ${DOCKER_IMAGE}:${SERIAL})
               sleep 60
@@ -63,11 +63,11 @@ pipeline {
               then
                  echo \${container_id} not healthy
                  docker logs \${container_id}
-                 docker stop \${container_id}
+                 docker stop \${container_id} && docker rm -f \${container_id}
                  exit 1
               else
                  echo \${container_id} is healthy
-                 docker stop \${container_id}
+                 docker stop \${container_id} && docker rm -f \${container_id}
               fi
            """
       }
