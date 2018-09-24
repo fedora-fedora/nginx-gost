@@ -59,4 +59,14 @@ gzip_vary on;
 EOF
 fi
 
+if [ ! -z ${DEBUG} ] && [ ${DEBUG} == "false" ]
+then
+cat << EOF >> /etc/nginx/conf.d/00-default.conf
+map $status $loggable {
+  ~^[23]  0;
+  default 1;
+}
+EOF
+fi
+
 exec "$@"
