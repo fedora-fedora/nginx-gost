@@ -44,4 +44,6 @@ cat /tmp/iru-hosts >> /etc/hosts
 touch /tmp/ready
 fi
 
+[ ! -z ${DEBUG} ] && cp /tmp/nginx.conf.debug /etc/nginx/nginx.conf
+
 exec "$@"
