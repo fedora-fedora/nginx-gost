@@ -42,7 +42,7 @@ pipeline {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                git clone --single-branch -b ${branch} ${PKI_GIT_URL}
+                git clone ${PKI_GIT_URL}
              '''
         }
         ansiColor('xterm') {
