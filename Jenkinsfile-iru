@@ -20,7 +20,7 @@ pipeline {
   }
   parameters {
     string(
-      name: "branch"
+      name: "branch",
       defaultValue: "master",
       description: "Which branch to use."
     )
