@@ -18,6 +18,11 @@ pipeline {
   }
   parameters {
     string(
+      name: "branch"
+      defaultValue: "master",
+      description: "Which branch to use."
+    )
+    string(
       name: "mailto",
       defaultValue: "admin@sdsys.ru",
       description: "Email which has to be notified."
@@ -35,7 +40,7 @@ pipeline {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
           sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                git clone ${PKI_GIT_URL}
+                git clone --single-branch -b ${branch} ${PKI_GIT_URL}
              '''
         }
         ansiColor('xterm') {
@@ -88,7 +93,9 @@ pipeline {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
             sh """GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                  git clone ${SWARM_GIT_URL}
+                  git clone --single-branch -b ${branch} ${SWARM_GIT_URL}
+                  if [ \$? != 0 ]; then GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \ 
+                  git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME} && git checkout -b ${branch} && cd ${WORKSPACE};fi
                   echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version
                """
         }
@@ -130,7 +137,7 @@ pipeline {
                   git config --global user.name "Jenkins"
                   git commit -m 'Version update'
                   GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                  git push origin master
+                  git push origin ${branch}
                '''
          }
        }
