@@ -59,19 +59,19 @@ gzip_vary on;
 EOF
 fi
 
-if [ ! -z ${DEBUG} ] && [ ${DEBUG} == "false" ]
-then
-cat << EOF >> /etc/nginx/conf.d/00-default.conf
-map $status $loggable {
-  ~^[23]  0;
-  default 1;
-}
-log_format  main  '"$host" $remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-
-    access_log  /var/log/nginx/access.log  main if=$loggable;
-EOF
-fi
+#if [ ! -z ${DEBUG} ] && [ ${DEBUG} == "false" ]
+#then
+#cat << EOF >> /etc/nginx/conf.d/00-default.conf
+#map $status $loggable {
+#  ~^[23]  0;
+#  default 1;
+#}
+#log_format  main  '"$host" $remote_addr - $remote_user [$time_local] "$request" '
+#                      '$status $body_bytes_sent "$http_referer" '
+#                      '"$http_user_agent" "$http_x_forwarded_for"';
+#
+#    access_log  /var/log/nginx/access.log  main if=$loggable;
+#EOF
+#fi
 
 exec "$@"
