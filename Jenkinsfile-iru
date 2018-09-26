@@ -95,9 +95,9 @@ pipeline {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
             sh """GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                  git clone --single-branch -b ${branch} ${SWARM_GIT_URL}
-                  if [ \$? != 0 ]; then GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \\ 
-                  git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME} && git checkout -b ${branch} && cd ${WORKSPACE};fi
+                  git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME}
+                  git branch --list -a | grep ${branch}
+                  if [ \$? == 0 ];then echo "${branch} is allready exist";git checkout ${branch}; else echo "${branch} doeas not exist!!!"; git checkout -b ${branch};fi
                   echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version
                """
         }
