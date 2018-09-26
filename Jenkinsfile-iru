@@ -1,7 +1,7 @@
 def SERIAL
 /* def ENAMES = [ 'prod', 'dev' ]
 */
-def ENAMES = [ 'dev' ]
+def ENAMES = [ 'prod' ]
 def CLUSTERS = ['prod': 'iru-swarm.infoclinica.lan', 'dev': 'dev-iru-swarm.infoclinica.lan']
 def REGISTRIES = ['prod': 'registry.infoclinica.ru:5000', 'dev': 'dev-registry.infoclinica.ru:5000']
 
