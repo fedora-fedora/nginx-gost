@@ -46,7 +46,7 @@ fi
 
 # Включаем destination в логирование. см. Redmine 99040
 
-sed -i "s/\$remote_addr/\$proxy_protocol_addr - \"\$host\" \$remote_addr/" /etc/nginx/nginx.conf
+sed -i "s/\$remote_addr/\$realip_remote_addr - \"\$host\" \$remote_addr/" /etc/nginx/nginx.conf
 
 # Отключаем логи со статусом 200 и 300. см. Redmine 99946
 
