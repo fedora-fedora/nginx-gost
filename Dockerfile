@@ -43,5 +43,5 @@ COPY keys/htaccess.passwd /etc/nginx/htaccess.passwd
 RUN chown -R root:root /var/opt/cprocsp/keys/root
 
 EXPOSE 80 443
-#HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=2 CMD curl -f 127.0.0.1 || exit 1
+HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=2 CMD curl -f 127.0.0.1 || exit 1
 CMD ["nginx", "-g", "daemon off;"]
