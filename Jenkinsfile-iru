@@ -56,7 +56,7 @@ pipeline {
         sh "docker build --no-cache -t ${DOCKER_IMAGE}:${SERIAL} ."
       }
     }
-/*    stage("Staging") {
+    stage("Staging") {
       steps {
         echo "Staging ${DOCKER_IMAGE}:${SERIAL}"
         sh """set -x
@@ -79,7 +79,7 @@ pipeline {
            """
       }
     }
-*/    stage ("Push to registry") {
+    stage ("Push to registry") {
       steps {
         script {
           ENAMES.each { item ->
