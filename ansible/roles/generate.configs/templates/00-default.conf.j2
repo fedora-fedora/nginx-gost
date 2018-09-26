@@ -22,7 +22,7 @@ log_format  main  '"$host" $remote_addr - $remote_user - $realip_remote_addr [$t
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
-access_log  /var/log/nginx/access.log  main;
+access_log  /var/log/nginx/access.log  default;
 
 # Redirect http -> https
 server {
