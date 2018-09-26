@@ -79,7 +79,7 @@ pipeline {
            """
       }
     }
-*/    stage ("Push to registry") {
+    stage ("Push to registry") {
       steps {
         script {
           ENAMES.each { item ->
@@ -144,12 +144,13 @@ pipeline {
          }
        }
      }
-  }
+*/  }
   post {
     always {
       echo "CleaningUp work directory"
       deleteDir()
-      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
+/*      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
+*/
     }
     failure {
       mail charset: 'UTF-8',
