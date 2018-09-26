@@ -94,12 +94,13 @@ pipeline {
     stage ("Deploy") {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
-            sh """GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+            sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
                   git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME}
                   git branch --list -a | grep ${branch}
-                  if [ \$? == 0 ];then echo "${branch} is allready exist";git checkout ${branch}; else echo "${branch} doeas not exist!!!"; git checkout -b ${branch};fi
-                  echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version
-               """
+                  if [ $(git branch --list -a | grep ${branch}; echo $?) == 0 ];then echo "${branch} is allready exist";git checkout ${branch}; else echo "${branch} doeas not exist!!!"; git checkout -b ${branch};fi
+                  
+               '''
+            sh "cd ${SWARM_GIT_NAME} && echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version"
         }
         script {
           ENAMES.each { item ->
