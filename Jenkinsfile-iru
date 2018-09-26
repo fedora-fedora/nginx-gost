@@ -99,7 +99,7 @@ pipeline {
                   if [ $(git branch --list -a | grep ${branch}; echo $?) == 0 ];then echo "${branch} is already exist";git checkout ${branch}; else echo "${branch} does not exist!!!"; git checkout -b ${branch};fi
                   
                '''
-            sh "cd ${SWARM_GIT_NAME} && echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version"
+            sh "echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version"
         }
         script {
           ENAMES.each { item ->
