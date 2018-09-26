@@ -44,6 +44,17 @@ cat /tmp/iru-hosts >> /etc/hosts
 touch /tmp/ready
 fi
 
+# Включаем destination в логирование. см. Redmine 99040
+
+sed -i "s/\$remote_addr/\"\$host\" \$remote_addr/" ~/nginx.conf
+
+# Отключаем логи со статусом 200 и 300. см. Redmine 99946
+
+if [ ! -z ${DEBUG} ] && [ ${DEBUG} == "false" ]
+then
+  sed -i "/log_format  main/i    map $status $loggable {\n    ~^[23]  0;\n    default 1;\n    }" ~/nginx.conf
+  sed -i "s/access_log  \/var\/log\/nginx\/access.log  main;/access_log  \/var\/log\/nginx\/access.log  main if=\$loggable;/" ~/nginx.conf
+fi
 
 if [ ! -z ${COMPRESS} ] && [ ${COMPRESS} == "true" ]
 then
@@ -58,20 +69,5 @@ gzip_types text/plain application/x-javascript text/xml text/css application/xml
 gzip_vary on;
 EOF
 fi
-
-#if [ ! -z ${DEBUG} ] && [ ${DEBUG} == "false" ]
-#then
-#cat << EOF >> /etc/nginx/conf.d/00-default.conf
-#map $status $loggable {
-#  ~^[23]  0;
-#  default 1;
-#}
-#log_format  main  '"$host" $remote_addr - $remote_user [$time_local] "$request" '
-#                      '$status $body_bytes_sent "$http_referer" '
-#                      '"$http_user_agent" "$http_x_forwarded_for"';
-#
-#    access_log  /var/log/nginx/access.log  main if=$loggable;
-#EOF
-#fi
 
 exec "$@"
