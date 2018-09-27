@@ -19,10 +19,10 @@
     src: templates/00-default.conf.j2
     dest: "{{ target_dir }}/conf.d/00-default.conf"
 
-- name: Generate for 00-proxyprotocol.conf
+- name: Generate for 00-healthcheck.conf.j2
   template:
-    src: templates/00-proxyprotocol.conf.j2
-    dest: "{{ target_dir }}/conf.d/00-proxyprotocol.conf"
+    src: templates/00-healthcheck.conf.j2
+    dest: "{{ target_dir }}/conf.d/00-healthcheck.conf.j2"
 
 - name: Generate for admin.infoclinica.ru
   template:
