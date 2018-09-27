@@ -1,7 +1,5 @@
 server {
-        listen 443 ssl proxy_protocol;
-        set_real_ip_from 0.0.0.0/0;
-        real_ip_header proxy_protocol;
+        listen 443 ssl;
         server_name {{ item.value.sitename }};
 
         ssl_certificate     /etc/pki/tls/certs/{{ item.value.cert }};
@@ -13,7 +11,7 @@ server {
 
         location / {
                 proxy_set_header Host $http_host;
-                proxy_set_header X-Real-IP $proxy_protocol_addr;
+                proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-SSL-Cipher $ssl_cipher;
                 proxy_set_header Authorization $http_authorization;
