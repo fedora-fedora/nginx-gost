@@ -16,7 +16,7 @@ server {
 
         location /api {
                 proxy_set_header Host $http_x_forwarded_host;
-                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Real-IP $proxy_protocol_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Authorization "Certificate e5cafb98-7f86-4571-b3ce-b87144f8ccef-$ssl_client_serial";
                 proxy_set_header X-SSL-Cipher $ssl_cipher;
