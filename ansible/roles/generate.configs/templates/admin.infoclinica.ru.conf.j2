@@ -19,7 +19,7 @@ ssl_certificate_key {{ item.value.gost_engine }};
                         proxy_set_header        Host    $host;
                         proxy_set_header        X-Real-Ip       $proxy_protocol_addr;
                         proxy_set_header        X-Forwarded-For $proxy_protocol_addr;
-                        proxy_set_header        X-SSL-Cipher $ssl_cipher;
+#                        proxy_set_header        X-SSL-Cipher $ssl_cipher;
                         dav_methods             PUT DELETE MKCOL COPY MOVE;
                         create_full_put_path    on;
 
