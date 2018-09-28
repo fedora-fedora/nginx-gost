@@ -1,4 +1,4 @@
-FROM registry.sdsys.ru/centos:7.4.1708
+FROM centos:7
 
 #Копируем файл репозитория
 COPY configs/nginx.repo /etc/yum.repos.d/nginx.repo
