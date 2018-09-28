@@ -21,7 +21,7 @@ pipeline {
   parameters {
     string(
       name: "branch",
-      defaultValue: "master",
+      defaultValue: "100060",
       description: "Which branch to use."
     )
     string(
@@ -94,12 +94,12 @@ pipeline {
     stage ("Deploy") {
       steps {
         withCredentials([sshUserPrivateKey(credentialsId: 'provision', keyFileVariable: 'GIT_SSH_KEY', passphraseVariable: '', usernameVariable: 'GIT_SSH_USERNAME')]) {
-            sh """GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                  git clone --single-branch -b ${branch} ${SWARM_GIT_URL}
-                  if [ \$? != 0 ]; then GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \\ 
-                  git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME} && git checkout -b ${branch} && cd ${WORKSPACE};fi
-                  echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version
-               """
+            sh '''GIT_SSH_COMMAND='ssh -i ${GIT_SSH_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                  git clone ${SWARM_GIT_URL} && cd ${SWARM_GIT_NAME}
+                  if [ $(git branch --list -a | grep -q ${branch}; echo $?) == 0 ];then echo "${branch} is already exist";git checkout ${branch}; else echo "${branch} does not exist!!!"; git checkout -b ${branch};fi
+                  
+               '''
+            sh "echo -n ${SERIAL} > ${SWARM_GIT_NAME}/tags/${DOCKER_IMAGE}.version"
         }
         script {
           ENAMES.each { item ->
@@ -149,7 +149,8 @@ pipeline {
     always {
       echo "CleaningUp work directory"
       deleteDir()
-      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
+/*      sh "docker image rm -f `docker image ls -q ${DOCKER_IMAGE}:${SERIAL}`"
+*/
     }
     failure {
       mail charset: 'UTF-8',

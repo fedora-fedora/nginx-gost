@@ -9,7 +9,7 @@
     dest: "{{ target_dir }}/configs/docker-entrypoint.sh"
   with_dict: "{{ api }}"
 
-- name: Add execute ti docker-entrypoint.sh
+- name: Add execute to docker-entrypoint.sh
   file:
     path: "{{ target_dir }}/configs/docker-entrypoint.sh"
     mode: 0755
@@ -18,6 +18,11 @@
   template:
     src: templates/00-default.conf.j2
     dest: "{{ target_dir }}/conf.d/00-default.conf"
+
+- name: Generate for 00-healthcheck.conf.j2
+  template:
+    src: templates/00-healthcheck.conf.j2
+    dest: "{{ target_dir }}/conf.d/00-healthcheck.conf"
 
 - name: Generate for admin.infoclinica.ru
   template:
