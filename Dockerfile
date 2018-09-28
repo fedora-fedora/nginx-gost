@@ -37,11 +37,11 @@ COPY configs/docker-entrypoint.sh \
 COPY keys/infoclin.000 /var/opt/cprocsp/keys/root/
 COPY keys/gost.infoclinica.ru.cer /etc/pki/tls/certs/
 
-COPY conf.d/ /etc/nginx/conf.d/
-COPY bundle/ /etc/pki/tls/
+COPY configs/nginx.conf /etc/nginx/conf.d/
+#COPY bundle/ /etc/pki/tls/
 COPY keys/htaccess.passwd /etc/nginx/htaccess.passwd
 RUN chown -R root:root /var/opt/cprocsp/keys/root
 
-EXPOSE 81 80 443
+EXPOSE 81 80 4433 
 HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=2 CMD curl -f 127.0.0.1:81 || exit 1
 CMD ["nginx", "-g", "daemon off;"]
