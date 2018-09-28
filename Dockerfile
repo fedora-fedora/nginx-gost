@@ -31,7 +31,7 @@ COPY configs/docker-entrypoint.sh \
      iru-hosts \
      distributive/lsb-cprocsp-kc2-64-4.0.0-4.x86_64.rpm \
      /tmp/
-
+RUN chmod 755 /tmp/docker-entrypoint.sh
 #Копируем контейнер с ключами, сертификат в формате DER и тестовый конфиг для виртуального хоста, меняем владельца.
 
 COPY keys/infoclin.000 /var/opt/cprocsp/keys/root/
